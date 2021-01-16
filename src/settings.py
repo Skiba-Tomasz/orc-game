@@ -3,4 +3,7 @@ class Settings:
 	def __init__(self):
 		self.screen_width = 960
 		self.screen_height = 480
-		self.bg_color = (230, 230, 123)
+		self.rows = 10
+		self.cols = 20
+		self.tileSize = 48
+		self.bg_color = (50, 50, 50)
