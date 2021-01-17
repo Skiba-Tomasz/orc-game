@@ -1,4 +1,5 @@
 import pygame
+import copy
 from pygame.sprite import Sprite
 from pygame.surface import Surface
 from enum import Enum
@@ -63,16 +64,12 @@ class Character(Sprite, Controllable):
 	def onKeyUp(self, event):
 		if event.key == pygame.K_RIGHT and self.direction == Direction.RIGHT:
 			self.isMoving = False
-			self.frame = Character.STATIONARY_FRAME
 		elif event.key == pygame.K_LEFT and self.direction == Direction.LEFT:
 			self.isMoving = False
-			self.frame = Character.STATIONARY_FRAME
 		elif event.key == pygame.K_UP and self.direction == Direction.UP:
 			self.isMoving = False
-			self.frame = Character.STATIONARY_FRAME
 		elif event.key == pygame.K_DOWN and self.direction == Direction.DOWN:
 			self.isMoving = False
-			self.frame = Character.STATIONARY_FRAME
 
 	def calculateState(self):
 		if self.isMoving:
@@ -87,27 +84,31 @@ class Character(Sprite, Controllable):
 				self.rect.x += self.speed
 			elif self.direction == Direction.LEFT:
 				self.rect.x -= self.speed
+		else:
+			self.frame = Character.STATIONARY_FRAME
 		self.prapareSprite(self.frame)
 
 	def calculateCollisions(self, colliders):
 		walls = pygame.sprite.Group()
-		walls.empty()
 		for ob in colliders:
 			if type(ob) is Wall:
 				walls.add(ob)
 		self.onWallCollision(walls)
+		walls.empty()
+
 
 	def onWallCollision(self, walls):
 		collisions = pygame.sprite.spritecollide(self, walls, False)
+		derection = copy.deepcopy(self.direction)
 		for collision in collisions:
 			print(collision)
 			if collision.collidable:
-				self.isMoving = False
-				if self.direction == Direction.UP:
+				if derection == Direction.UP:
 					self.rect.y = collision.rect.y + collision.rect.height
-				elif self.direction == Direction.DOWN:
+				elif derection == Direction.DOWN:
 					self.rect.y = collision.rect.y - self.rect.height
-				elif self.direction == Direction.RIGHT:
+				elif derection == Direction.RIGHT:
 					self.rect.x = collision.rect.x - collision.rect.width
-				elif self.direction == Direction.LEFT:
+				elif derection == Direction.LEFT:
 					self.rect.x = collision.rect.x + collision.rect.width
+				collisions.clear()

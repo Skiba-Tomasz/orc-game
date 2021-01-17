@@ -14,7 +14,7 @@ class Main:
 		Main.SETTINGS.screen_height = self.screen.get_rect().height
 		pygame.display.set_caption("Let me out")
 
-		self.player = Character((10,5))
+		self.player = Character((10,4))
 		self.map = Map((Main.SETTINGS.screen_width, Main.SETTINGS.screen_height), (0,0), self.player)
 		self.bgSprites = pygame.sprite.Group()
 		self.bgSprites.empty()
@@ -53,8 +53,8 @@ class Main:
 		while True:
 			self.onEvent()
 			for contrOb in self.controllableObjects:
-				contrOb.calculateCollisions(self.bgSprites)
 				contrOb.calculateState()
+				contrOb.calculateCollisions(self.bgSprites)
 			self.map.checkMapChange(self.bgSprites)
 			self.draw()
 			sleep(0.04)
