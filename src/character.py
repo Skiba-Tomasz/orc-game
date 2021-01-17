@@ -2,17 +2,12 @@ import pygame
 import copy
 from pygame.sprite import Sprite
 from pygame.surface import Surface
-from enum import Enum
 
 from controllable import Controllable
 from wall import Wall
+from direction import Direction
+from projectile import *
 #from drawable import Drawable
-
-class Direction(Enum):
-		DOWN = 0
-		LEFT = 1
-		RIGHT = 2
-		UP = 3
 
 class Character(Sprite, Controllable):
 	SPRITE_SIZE = 48
@@ -25,12 +20,15 @@ class Character(Sprite, Controllable):
 		self.speed = 10
 		self.frame = 1
 		self.isMoving = False
-		self.direction = Direction.UP
+		self.direction = Direction.RIGHT
 		self.spriteSheet = pygame.image.load('../img/characters.png')
 		self.prapareSprite(1)
 		self.rect = self.image.get_rect()
 		self.rect.x = position[0]*48
 		self.rect.y = position[1]*48
+		self.projectileType = ProjectileType.FIRE
+		self.effectors = pygame.sprite.Group()
+		self.effectors.empty()
 
 	def prapareSprite(self, frame):
 		size = Character.SPRITE_SIZE
@@ -60,6 +58,10 @@ class Character(Sprite, Controllable):
 			self.isMoving = True
 			self.direction = Direction.DOWN
 			self.frame = Character.STATIONARY_FRAME
+		elif event.key == pygame.K_c:
+			proj = Projectile(self.projectileType, self.direction, (self.rect.x, self.rect.y))
+			self.effectors.add(proj)
+
 
 	def onKeyUp(self, event):
 		if event.key == pygame.K_RIGHT and self.direction == Direction.RIGHT:
@@ -112,3 +114,8 @@ class Character(Sprite, Controllable):
 				elif derection == Direction.LEFT:
 					self.rect.x = collision.rect.x + collision.rect.width
 				collisions.clear()
+
+	def getEffectors(self):
+		tmp = self.effectors
+		self.effectors = pygame.sprite.Group()
+		return tmp

@@ -3,6 +3,7 @@ from time import sleep
 
 from settings import Settings
 from character import Character
+from projectile import *
 from map import Map
 class Main:
 	SETTINGS = Settings()
@@ -24,6 +25,14 @@ class Main:
 		self.controllableSprites = pygame.sprite.Group()
 		self.controllableSprites.empty()
 		self.controllableSprites.add(self.player)
+
+		#self.projectile = Projectile(ProjectileType.FROST, self.player.direction, (10,5))
+		#self.controllableSprites.add(self.projectile)
+
+		self.effectors = pygame.sprite.Group()
+		self.effectors.empty()
+
+
 		self.controllableObjects = [self.player]
 
 	def close(self):
@@ -47,6 +56,7 @@ class Main:
 		self.screen.fill(Main.SETTINGS.bg_color)
 		self.bgSprites.draw(self.screen)
 		self.controllableSprites.draw(self.screen)
+		self.effectors.draw(self.screen)
 		pygame.display.flip()		
 
 	def run(self):
@@ -55,10 +65,20 @@ class Main:
 			for contrOb in self.controllableObjects:
 				contrOb.calculateState()
 				contrOb.calculateCollisions(self.bgSprites)
-			self.map.checkMapChange(self.bgSprites)
+			self.effectors.add(self.player.getEffectors())
+			for effect in self.effectors:
+				effect.calculateState()
+			self.cleanOutOfScreenObjects()
+			self.map.checkMapChange(self.bgSprites, self.effectors)
 			self.draw()
 			sleep(0.04)
 
+	def cleanOutOfScreenObjects(self):
+		toDelete = []
+		for e in self.effectors:
+			if e.delete():
+				toDelete.append(e)
+		self.effectors.remove(toDelete)
 
 if __name__ == '__main__':
 	app = Main()

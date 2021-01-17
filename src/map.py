@@ -54,7 +54,7 @@ class Map(Sprite):
 		self.prepareEnvObj()
 
 
-	def checkMapChange(self, globalEnvSprites):
+	def checkMapChange(self, globalEnvSprites, globalEffectors):
 		settings = Settings()
 		chPos = (self.character.rect.x, self.character.rect.y)
 		#print(chPos)
@@ -82,5 +82,6 @@ class Map(Sprite):
 			globalEnvSprites.empty()
 			globalEnvSprites.add(self)
 			globalEnvSprites.add(self.envObjects)
+			globalEffectors.empty()
 		#	return self.envObjects
 		#return globalEnvSprites
