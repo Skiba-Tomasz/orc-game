@@ -21,10 +21,10 @@ class Main:
 		self.bgSprites.add(self.map)
 		self.bgSprites.add(self.map.envObjects)
 
-		self.topSprites = pygame.sprite.Group()
-		self.topSprites.empty()
-		self.topSprites.add(self.player)
-		self.controllableObjects = [self.player.controller]
+		self.controllableSprites = pygame.sprite.Group()
+		self.controllableSprites.empty()
+		self.controllableSprites.add(self.player)
+		self.controllableObjects = [self.player]
 
 	def close(self):
 		pygame.display.quit()
@@ -46,7 +46,7 @@ class Main:
 	def draw(self):
 		self.screen.fill(Main.SETTINGS.bg_color)
 		self.bgSprites.draw(self.screen)
-		self.topSprites.draw(self.screen)
+		self.controllableSprites.draw(self.screen)
 		pygame.display.flip()		
 
 	def run(self):
