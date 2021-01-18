@@ -16,9 +16,12 @@ class Astar:
 
 	def __init__(self):
 		self.blockedNodes = []
-		self.blockedNodes.append(Node((2,0)))
-		self.blockedNodes.append(Node((1,1)))
-		self.blockedNodes.append(Node((2,2)))
+		self.mapMaxX = 20
+		self.mapMaxY = 10
+		self.depth = 0
+		#self.blockedNodes.append(Node((2,0)))
+		#self.blockedNodes.append(Node((1,1)))
+		#self.blockedNodes.append(Node((2,2)))
 
 	def process(self, startNode, endNode, maxIterations):
 		openList = []
@@ -57,18 +60,40 @@ class Astar:
 
 	def generateChildren(self, node):
 		chilren = []
-		nodeW = Node((node.x-1, node.y), node.totalCost, node.f, node)
-		if not self.isNodeBlocked(nodeW):
-			chilren.append(nodeW)
-		nodeE = Node((node.x+1, node.y), node.totalCost, node.f, node)
-		if not self.isNodeBlocked(nodeE):
-			chilren.append(nodeE)
-		nodeN = Node((node.x, node.y-1), node.totalCost, node.f, node)
-		if not self.isNodeBlocked(nodeN):
-			chilren.append(nodeN)
-		nodeS = Node((node.x, node.y+1), node.totalCost, node.f, node)
-		if not self.isNodeBlocked(nodeS):
-			chilren.append(nodeS)
+		if(node.x-1 > 0):
+			nodeW = Node((node.x-1, node.y), node.totalCost, node.f, node)
+			if not self.isNodeBlocked(nodeW):
+				chilren.append(nodeW)
+		if(node.x+1 < self.mapMaxX):
+			nodeE = Node((node.x+1, node.y), node.totalCost, node.f, node)
+			if not self.isNodeBlocked(nodeE):
+				chilren.append(nodeE)
+		if(node.y-1 > 0):
+			nodeN = Node((node.x, node.y-1), node.totalCost, node.f, node)
+			if not self.isNodeBlocked(nodeN):
+				chilren.append(nodeN)
+		if(node.y+1 < self.mapMaxY):
+			nodeS = Node((node.x, node.y+1), node.totalCost, node.f, node)
+			if not self.isNodeBlocked(nodeS):
+				chilren.append(nodeS)
+
+#		if(node.x-1 > 0 and node.y-1 > 0):
+#			nodeWN = Node((node.x-1, node.y-1), node.totalCost, node.f, node)
+#			if not self.isNodeBlocked(nodeWN):
+#				chilren.append(nodeWN)
+#		if(node.x+1 < self.mapMaxX and node.y-1 > 0):
+#			nodeEN = Node((node.x+1, node.y-1), node.totalCost, node.f, node)
+#			if not self.isNodeBlocked(nodeEN):
+#				chilren.append(nodeEN)
+#		if(node.x-1 > 0 and node.y+1 < self.mapMaxY):
+#			nodeWS = Node((node.x-1, node.y+1), node.totalCost, node.f, node)
+#			if not self.isNodeBlocked(nodeWS):
+#				chilren.append(nodeWS)
+#		if(node.x+1 < self.mapMaxX and node.y+1 < self.mapMaxY):
+#			nodeES = Node((node.x+1, node.y+1), node.totalCost, node.f, node)
+#			if not self.isNodeBlocked(nodeES):
+#				chilren.append(nodeES)
+
 		return chilren
 
 	def isNodeBlocked(self, node):
@@ -89,8 +114,45 @@ class Astar:
 			print(str(node.x) + "x" + str(node.y))
 			self.printTrack(node.parent)
 
+	def loadTask(self):
+		file = open('astarTask.txt', 'r')
+		data = file.read()
+		self.levelRows = data.split('\n')
+		print(type(self.levelRows))
+		print(self.levelRows)
+
+	def getTaskStart(self):
+		for y in range(len(self.levelRows)):
+			for x in range(len(self.levelRows[y])):	
+				if self.levelRows[y][x] == 'S':
+					print('Start foud')
+					self.taskStartNode = Node((x,y))
+				elif self.levelRows[y][x] == 'E':
+					print('End foud')
+					self.taskEndNode = Node((x,y))
+				elif self.levelRows[y][x] == '1':
+					self.blockedNodes.append(Node((x,y)))
+
+	def printMap(self, node):
+		self.depth += 1
+		if node is not None:
+			for y in range(len(self.levelRows)):
+				row = '';
+				for x in range(len(self.levelRows[y])):	
+					if x == node.x and y == node.y:
+						row += "X"
+					else:
+						row += self.levelRows[y][x]
+				print(row)
+				self.levelRows[y] = row
+			self.printMap(node.parent)
+
 if __name__ == '__main__':
 	app = Astar()
-	result = app.process(Node((0,0), 0, 100), Node((2,1)), 200)
+	#result = app.process(Node((0,0)), Node((2,1)),200)
+	app.loadTask()
+	app.getTaskStart()
+	result = app.process(app.taskStartNode, app.taskEndNode, 20033)
 	print('====================')
-	app.printTrack(result)
+	app.printMap(result)
+	print(app.depth)
