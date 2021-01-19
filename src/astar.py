@@ -17,47 +17,48 @@ class Node:
 
 class Astar:
 
-	def __init__(self):
+	def __init__(self, maxIterations):
 		self.blockedNodes = []
 		self.mapMaxX = 20
 		self.mapMaxY = 10
 		self.depth = 0
+		self.maxIterations = maxIterations
 		#self.blockedNodes.append(Node((2,0)))
 		#self.blockedNodes.append(Node((1,1)))
 		#self.blockedNodes.append(Node((2,2)))
 
-	def process(self, startNode, endNode, maxIterations):
+	def process(self, startNode, endNode):
 		openList = []
 		closedList = []
 		openList.append(startNode)
 		iters = 0
-		while len(openList) > 0 and iters < maxIterations:
+		while len(openList) > 0 and iters < self.maxIterations:
 			openList.sort(reverse=False, key=self.getF)
 			q = openList[0]
 			for o in openList:
 				iters+=1
-				print(str(q.x) + "x" + str(q.y))
+				#print(str(q.x) + "x" + str(q.y))
 				o.f = self.calculateTravelCost(o, endNode)
-				print("cost " + str(o.f))
+				#print("cost " + str(o.f))
 				if o.f <= q.f:
 					q = o
 					#print('len' + str(len(openList)))
 					openList.remove(q)
 					#print('len a' + str(len(openList)))
 					successors = self.generateChildren(q)
-					print('Parent(' + str(q.x) + 'x' + str(q.y) + ') f=' + str(q.f) + ' g=' + str(q.g) + ' h=' + str(q.h))
+					#print('Parent(' + str(q.x) + 'x' + str(q.y) + ') f=' + str(q.f) + ' g=' + str(q.g) + ' h=' + str(q.h))
 					for s in successors:
 						if s.x == endNode.x and s.y == endNode.y:
 							return s
 						s.g = q.g + self.distance(s, q)
 						s.h = self.distance(s, endNode)
 						s.f = s.g + s.h
-						print('Successor(' + str(s.x) + 'x' + str(s.y) + ') f=' + str(s.f) + ' g=' + str(s.g) + ' h=' + str(s.h))
+						#print('Successor(' + str(s.x) + 'x' + str(s.y) + ') f=' + str(s.f) + ' g=' + str(s.g) + ' h=' + str(s.h))
 					successors.sort(reverse=True, key=self.getF)
 					for s in successors:
 						if not self.isLowerCostNodeInList(openList, s):
 							if not self.isLowerCostNodeInList(closedList, s):
-								print('Successor inserted(' + str(s.x) + 'x' + str(s.y) + ') f=' + str(s.f) + ' g=' + str(s.g) + ' h=' + str(s.h))
+								#print('Successor inserted(' + str(s.x) + 'x' + str(s.y) + ') f=' + str(s.f) + ' g=' + str(s.g) + ' h=' + str(s.h))
 								openList.insert(0, s)
 			closedList.append(q)
 
@@ -127,6 +128,11 @@ class Astar:
 			print(str(node.x) + "x" + str(node.y))
 			self.printTrack(node.parent)
 
+	def revertTrack(self, node, track):
+		if node is not None:
+			self.revertTrack(node.parent, track)
+			track.append(node)
+
 	def loadTask(self):
 		file = open('astarTask.txt', 'r')
 		data = file.read()
@@ -163,12 +169,12 @@ class Astar:
 			sleep(0.02)
 			self.printMap(node.parent)
 
-if __name__ == '__main__':
-	app = Astar()
-	#result = app.process(Node((0,0)), Node((2,1)),200)
-	app.loadTask()
-	app.getTaskStart()
-	result = app.process(app.taskStartNode, app.taskEndNode, 10000)
-	print('====================')
-	app.printMap(result)
-	print(app.depth)
+#if __name__ == '__main__':
+#	app = Astar(10000)
+#	#result = app.process(Node((0,0)), Node((2,1)),200)
+#	app.loadTask()
+#	app.getTaskStart()
+#	result = app.process(app.taskStartNode, app.taskEndNode)
+#	print('====================')
+#	app.printMap(result)
+#	print(app.depth)

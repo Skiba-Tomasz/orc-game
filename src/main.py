@@ -7,6 +7,7 @@ from projectile import *
 from map import Map
 from enemy import Enemy
 from attackable import Attackable
+from gameAI import GameAI
 class Main:
 	SETTINGS = Settings()
 
@@ -35,7 +36,7 @@ class Main:
 		self.effectors = pygame.sprite.Group()
 		self.effectors.empty()
 
-		self.e = Enemy((12,4))
+		self.e = Enemy((1,1))
 		if isinstance(self.e, Attackable):
 			print("Tak gowno w dupie!")
 		else:
@@ -47,6 +48,13 @@ class Main:
 		self.stateableObjs = [self.player, self.e]
 		self.collidableObjs = [self.player, self.e]
 		self.controllableObjects = [self.player]
+
+		self.ai = GameAI()
+
+		self.ai.move(self.player, self.e, self.bgSprites)
+
+		self.framesPassed = 0;
+
 
 	def close(self):
 		pygame.display.quit()
@@ -75,6 +83,9 @@ class Main:
 	def run(self):
 		while True:
 			self.onEvent()
+			if self.framesPassed % Main.SETTINGS.pathfindingFreq == 0:
+				self.ai.move(self.player, self.e, self.bgSprites)
+
 			for sObj in self.stateableObjs:
 				sObj.calculateState()
 			for cObj in self.collidableObjs:
@@ -87,6 +98,7 @@ class Main:
 			self.cleanOutOfScreenObjects()
 			self.map.checkMapChange(self.bgSprites, self.effectors)
 			self.draw()
+			self.framesPassed += 1
 			sleep(0.04)
 
 	def cleanOutOfScreenObjects(self):

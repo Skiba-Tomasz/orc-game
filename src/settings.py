@@ -7,3 +7,4 @@ class Settings:
 		self.cols = 20
 		self.tileSize = 48
 		self.bg_color = (50, 50, 50)
+		self.pathfindingFreq = 25 #Per how many frames to refresh paths for enemies to follow
