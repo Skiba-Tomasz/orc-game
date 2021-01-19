@@ -1,7 +1,10 @@
 # Implementation of A* based on source
 # https://www.geeksforgeeks.org/a-search-algorithm/
 # Author Tomasz Skiba
+#import math
+from time import sleep
 
+#from Queue import PriorityQueue
 class Node:
 	def __init__(self, position, totalCost = 0, f = 0, parent = None):
 		self.x = position[0]
@@ -37,25 +40,34 @@ class Astar:
 				print("cost " + str(o.f))
 				if o.f <= q.f:
 					q = o
-					print('len' + str(len(openList)))
+					#print('len' + str(len(openList)))
 					openList.remove(q)
-					print('len a' + str(len(openList)))
+					#print('len a' + str(len(openList)))
 					successors = self.generateChildren(q)
+					print('Parent(' + str(q.x) + 'x' + str(q.y) + ') f=' + str(q.f) + ' g=' + str(q.g) + ' h=' + str(q.h))
 					for s in successors:
 						if s.x == endNode.x and s.y == endNode.y:
 							return s
 						s.g = q.g + self.distance(s, q)
 						s.h = self.distance(s, endNode)
 						s.f = s.g + s.h
+						print('Successor(' + str(s.x) + 'x' + str(s.y) + ') f=' + str(s.f) + ' g=' + str(s.g) + ' h=' + str(s.h))
+					successors.sort(reverse=True, key=self.getF)
+					for s in successors:
 						if not self.isLowerCostNodeInList(openList, s):
 							if not self.isLowerCostNodeInList(closedList, s):
-								openList.append(s)
+								print('Successor inserted(' + str(s.x) + 'x' + str(s.y) + ') f=' + str(s.f) + ' g=' + str(s.g) + ' h=' + str(s.h))
+								openList.insert(0, s)
 			closedList.append(q)
+
+	def getF(self, node):
+		return node.f
 
 	def calculateTravelCost(self, startNode, endNode):
 		return startNode.totalCost + self.distance(startNode, endNode)
 
 	def distance(self, n1, n2):
+		#return math.sqrt((n1.x - n2.x)**2 + (n1.y - n2.y)**2)
 		return abs(n1.x - n2.x) + abs(n1.y - n2.y)
 
 	def generateChildren(self, node):
@@ -130,8 +142,10 @@ class Astar:
 				elif self.levelRows[y][x] == 'E':
 					print('End foud')
 					self.taskEndNode = Node((x,y))
-				elif self.levelRows[y][x] == '1':
-					self.blockedNodes.append(Node((x,y)))
+				elif not self.levelRows[y][x] == ' ':
+					bn = Node((x,y))
+					self.blockedNodes.append(bn)
+					print('Blocking: ' + str(bn.x) + 'x' + str(bn.y))
 
 	def printMap(self, node):
 		self.depth += 1
@@ -145,6 +159,7 @@ class Astar:
 						row += self.levelRows[y][x]
 				print(row)
 				self.levelRows[y] = row
+			sleep(0.3)
 			self.printMap(node.parent)
 
 if __name__ == '__main__':
@@ -152,7 +167,7 @@ if __name__ == '__main__':
 	#result = app.process(Node((0,0)), Node((2,1)),200)
 	app.loadTask()
 	app.getTaskStart()
-	result = app.process(app.taskStartNode, app.taskEndNode, 20033)
+	result = app.process(app.taskStartNode, app.taskEndNode, 10000)
 	print('====================')
 	app.printMap(result)
 	print(app.depth)
