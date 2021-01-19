@@ -32,6 +32,7 @@ class Astar:
 		openList.append(startNode)
 		iters = 0
 		while len(openList) > 0 and iters < maxIterations:
+			openList.sort(reverse=False, key=self.getF)
 			q = openList[0]
 			for o in openList:
 				iters+=1
@@ -159,7 +160,7 @@ class Astar:
 						row += self.levelRows[y][x]
 				print(row)
 				self.levelRows[y] = row
-			sleep(0.3)
+			sleep(0.02)
 			self.printMap(node.parent)
 
 if __name__ == '__main__':
