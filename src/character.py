@@ -1,5 +1,4 @@
 import pygame
-import copy
 from pygame.sprite import Sprite
 from pygame.surface import Surface
 
@@ -7,15 +6,16 @@ from controllable import Controllable
 from wall import Wall
 from direction import Direction
 from projectile import *
+from attackable import Attackable
 #from drawable import Drawable
 
-class Character(Sprite, Controllable):
+class Character(Sprite, Controllable, Attackable):
 	SPRITE_SIZE = 48
 	STATIONARY_FRAME = 1
 
 	def __init__(self, position):
 		super().__init__()
-		self.characterSpriteID = 1
+		self.characterSpriteID = 2
 		self.hp = 5
 		self.speed = 10
 		self.frame = 1
@@ -26,14 +26,14 @@ class Character(Sprite, Controllable):
 		self.rect = self.image.get_rect()
 		self.rect.x = position[0]*48
 		self.rect.y = position[1]*48
-		self.projectileType = ProjectileType.FIRE
+		self.projectileType = ProjectileType.FROST
 		self.effectors = pygame.sprite.Group()
 		self.effectors.empty()
 
 	def prapareSprite(self, frame):
 		size = Character.SPRITE_SIZE
 		self.image = Surface((size,size))
-		spTopLeft = size * (self.characterSpriteID * 3)
+		spTopLeft = size * self.characterSpriteID * 3
 		spX = spTopLeft + size * frame
 		spY = self.direction.value * size
 		self.image.blit(self.spriteSheet, (0, 0), (spX, spY, size, size))
@@ -92,18 +92,25 @@ class Character(Sprite, Controllable):
 
 	def calculateCollisions(self, colliders):
 		walls = pygame.sprite.Group()
+		enemies = pygame.sprite.Group()
 		for ob in colliders:
-			if type(ob) is Wall:
+			if ob is self :
+				continue
+			elif isinstance(ob, Wall):
 				walls.add(ob)
+			elif isinstance(ob, Attackable):
+				enemies.add(ob)
 		self.onWallCollision(walls)
 		walls.empty()
+		self.onBeeingAttacked(enemies)
+		enemies.empty()
 
 
 	def onWallCollision(self, walls):
 		collisions = pygame.sprite.spritecollide(self, walls, False)
-		derection = copy.deepcopy(self.direction)
+		derection = self.direction
 		for collision in collisions:
-			print(collision)
+			#print(collision)
 			if collision.collidable:
 				if derection == Direction.UP:
 					self.rect.y = collision.rect.y + collision.rect.height
@@ -115,7 +122,14 @@ class Character(Sprite, Controllable):
 					self.rect.x = collision.rect.x + collision.rect.width
 				collisions.clear()
 
+
 	def getEffectors(self):
 		tmp = self.effectors
 		self.effectors = pygame.sprite.Group()
 		return tmp
+
+	def onBeeingAttacked(self, enemies):
+		collisions = pygame.sprite.spritecollide(self, enemies, False)
+		for collision in collisions:
+			self.hp -= 1
+			print('Hit!')

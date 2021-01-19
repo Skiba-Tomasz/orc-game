@@ -9,11 +9,3 @@ class Controllable:
 	@abstractmethod
 	def onKeyUp(self, event):
 		pass
-
-	@abstractmethod
-	def calculateState(self):
-		pass
-
-	@abstractmethod
-	def calculateCollisions(self, colliders):
-		pass
