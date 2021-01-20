@@ -37,10 +37,6 @@ class Main:
 		self.effectors.empty()
 
 		self.e = Enemy((1,1))
-		if isinstance(self.e, Attackable):
-			print("Tak gowno w dupie!")
-		else:
-			print("Nie, w pizdzie!")
 		self.bgSprites.add(self.e)
 
 		self.controllableObjects = [self.player]
@@ -53,7 +49,9 @@ class Main:
 
 		self.ai.move(self.player, self.e, self.bgSprites)
 
+
 		self.framesPassed = 0;
+		self.generateNextPath = False
 
 
 	def close(self):
@@ -84,8 +82,14 @@ class Main:
 		while True:
 			self.onEvent()
 			if self.framesPassed % Main.SETTINGS.pathfindingFreq == 0:
+				generateNextPath = True
+				self.framesPassed = 0
+			if (self.generateNextPath and self.e.isReadyForNewPath()) or self.e.isPathCompleted():
 				self.ai.move(self.player, self.e, self.bgSprites)
-
+				generateNextPath = False
+				self.framesPassed = 0
+			#if self.e.isReadyForNewPath() and self.ai.enemyPath is not None and len(self.ai.enemyPath) > 0:
+			#	self.e.path = self.ai.enemyPath
 			for sObj in self.stateableObjs:
 				sObj.calculateState()
 			for cObj in self.collidableObjs:

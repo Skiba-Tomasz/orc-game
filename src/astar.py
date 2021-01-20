@@ -23,6 +23,7 @@ class Astar:
 		self.mapMaxY = 10
 		self.depth = 0
 		self.maxIterations = maxIterations
+		self.levelRows = []
 		#self.blockedNodes.append(Node((2,0)))
 		#self.blockedNodes.append(Node((1,1)))
 		#self.blockedNodes.append(Node((2,2)))
@@ -169,12 +170,21 @@ class Astar:
 			sleep(0.02)
 			self.printMap(node.parent)
 
+	def resetPrintedMap(self):
+		self.levelRows = []
+		for i in range(10):
+			self.levelRows.append(" " * 20)
+
+
+	def test(self):
+		#result= app.process(Node((0,0)), Node((2,1)),200)
+		self.loadTask()
+		self.getTaskStart()
+		result = self.process(self.taskStartNode, self.taskEndNode)
+		print('====================')
+		self.printMap(result)
+		print(self.depth)
+
 #if __name__ == '__main__':
 #	app = Astar(10000)
-#	#result = app.process(Node((0,0)), Node((2,1)),200)
-#	app.loadTask()
-#	app.getTaskStart()
-#	result = app.process(app.taskStartNode, app.taskEndNode)
-#	print('====================')
-#	app.printMap(result)
-#	print(app.depth)
+#	app.test()
