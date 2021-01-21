@@ -94,7 +94,7 @@ class Enemy(Sprite, Attackable):
 
 	def onProjectileCollision(self, projectiles):
 		print(projectiles)
-		collisions = pygame.sprite.spritecollide(self, projectiles, False)
+		collisions = pygame.sprite.spritecollide(self, projectiles, True)
 		derection = self.direction
 		for collision in collisions:
 			print(collision)
@@ -140,6 +140,9 @@ class Enemy(Sprite, Attackable):
 		return direction
 
 	def delete(self):
+		return self.isDead()
+
+	def isDead(self):
 		if self.hp <= 0:
 			return True
 		return False

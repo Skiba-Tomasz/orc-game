@@ -6,6 +6,8 @@ class GameAI:
 		self.triggerDistance = triggerDistance
 
 	def move(self, character, enemy, obstacles):
+		if enemy.isDead():
+			return
 		cNode = Node((round(character.rect.x/48), round(character.rect.y/48)))
 		eNode = Node((round(enemy.rect.x/48), round(enemy.rect.y/48)))
 		a = Astar(1000)
