@@ -7,7 +7,6 @@ from wall import Wall
 from direction import Direction
 from projectile import *
 from attackable import Attackable
-#from drawable import Drawable
 
 class Character(Sprite, Controllable, Attackable):
 	SPRITE_SIZE = 48
@@ -22,7 +21,7 @@ class Character(Sprite, Controllable, Attackable):
 		self.isMoving = False
 		self.direction = Direction.RIGHT
 		self.spriteSheet = pygame.image.load('../img/characters.png')
-		self.prapareSprite(1)
+		self.__prapareSprite(1)
 		self.rect = self.image.get_rect()
 		self.rect.x = position[0]*48
 		self.rect.y = position[1]*48
@@ -30,16 +29,10 @@ class Character(Sprite, Controllable, Attackable):
 		self.effectors = pygame.sprite.Group()
 		self.effectors.empty()
 
-	def prapareSprite(self, frame):
-		size = Character.SPRITE_SIZE
-		self.image = Surface((size,size))
-		spTopLeft = size * self.characterSpriteID * 3
-		spX = spTopLeft + size * frame
-		spY = self.direction.value * size
-		self.image.blit(self.spriteSheet, (0, 0), (spX, spY, size, size))
-		self.image.set_colorkey((0, 0, 0))
-
-
+	def getEffectors(self):
+		tmp = self.effectors
+		self.effectors = pygame.sprite.Group()
+		return tmp
 
 	def onKeyDown(self, event):
 		if event.key == pygame.K_RIGHT:
@@ -61,7 +54,6 @@ class Character(Sprite, Controllable, Attackable):
 		elif event.key == pygame.K_c:
 			proj = Projectile(self.projectileType, self.direction, (self.rect.x, self.rect.y))
 			self.effectors.add(proj)
-
 
 	def onKeyUp(self, event):
 		if event.key == pygame.K_RIGHT and self.direction == Direction.RIGHT:
@@ -88,7 +80,7 @@ class Character(Sprite, Controllable, Attackable):
 				self.rect.x -= self.speed
 		else:
 			self.frame = Character.STATIONARY_FRAME
-		self.prapareSprite(self.frame)
+		self.__prapareSprite(self.frame)
 
 	def calculateCollisions(self, colliders):
 		walls = pygame.sprite.Group()
@@ -104,7 +96,6 @@ class Character(Sprite, Controllable, Attackable):
 		walls.empty()
 		self.onBeeingAttacked(enemies)
 		enemies.empty()
-
 
 	def onWallCollision(self, walls):
 		collisions = pygame.sprite.spritecollide(self, walls, False)
@@ -122,12 +113,6 @@ class Character(Sprite, Controllable, Attackable):
 					self.rect.x = collision.rect.x + collision.rect.width
 				collisions.clear()
 
-
-	def getEffectors(self):
-		tmp = self.effectors
-		self.effectors = pygame.sprite.Group()
-		return tmp
-
 	def onBeeingAttacked(self, enemies):
 		collisions = pygame.sprite.spritecollide(self, enemies, False)
 		derection = self.direction
@@ -143,4 +128,11 @@ class Character(Sprite, Controllable, Attackable):
 			self.hp -= 1
 			print('Hit!')
 
-
+	def __prapareSprite(self, frame):
+		size = Character.SPRITE_SIZE
+		self.image = Surface((size,size))
+		spTopLeft = size * self.characterSpriteID * 3
+		spX = spTopLeft + size * frame
+		spY = self.direction.value * size
+		self.image.blit(self.spriteSheet, (0, 0), (spX, spY, size, size))
+		self.image.set_colorkey((0, 0, 0))
