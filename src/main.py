@@ -45,7 +45,7 @@ class Main:
 		self.collidableObjs = [self.player, self.e]
 		self.controllableObjects = [self.player]
 
-		self.ai = GameAI()
+		self.ai = GameAI(5)
 
 		self.ai.move(self.player, self.e, self.bgSprites)
 

@@ -49,8 +49,8 @@ class Astar:
 					for s in successors:
 						if s.x == endNode.x and s.y == endNode.y:
 							return s
-						s.g = q.g + self.__distance(s, q)
-						s.h = self.__distance(s, endNode)
+						s.g = q.g + self.distance(s, q)
+						s.h = self.distance(s, endNode)
 						s.f = s.g + s.h
 						#print('Successor(' + str(s.x) + 'x' + str(s.y) + ') f=' + str(s.f) + ' g=' + str(s.g) + ' h=' + str(s.h))
 					successors.sort(reverse=True, key=self.__getF)
@@ -75,17 +75,17 @@ class Astar:
 		self.__resetPrintedMap()
 		self.__printMap(node)
 
-	def __getF(self, node):
-		return node.f
-
-	def __calculateTravelCost(self, startNode, endNode):
-		return startNode.totalCost + self.__distance(startNode, endNode)
-
-	def __distance(self, n1, n2, type = 'Manhatan'):
+	def distance(self, n1, n2, type = 'Manhatan'):
 		if type == 'Euclidean':
 			return math.sqrt((n1.x - n2.x)**2 + (n1.y - n2.y)**2)
 		elif type == 'Manhatan':
 			return abs(n1.x - n2.x) + abs(n1.y - n2.y)		
+
+	def __getF(self, node):
+		return node.f
+
+	def __calculateTravelCost(self, startNode, endNode):
+		return startNode.totalCost + self.distance(startNode, endNode)
 
 	def __generateChildren(self, node):
 		chilren = []

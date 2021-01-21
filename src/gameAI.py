@@ -2,11 +2,16 @@ from astar import *
 
 class GameAI:
 
+	def __init__(self, triggerDistance):
+		self.triggerDistance = triggerDistance
+
 	def move(self, character, enemy, obstacles):
-		a = Astar(1000)
-		self.parseObstacles(obstacles, a)
 		cNode = Node((round(character.rect.x/48), round(character.rect.y/48)))
 		eNode = Node((round(enemy.rect.x/48), round(enemy.rect.y/48)))
+		a = Astar(1000)
+		if a.distance(cNode, eNode) > self.triggerDistance:
+			return
+		self.parseObstacles(obstacles, a)
 		#self.hardLog(character, enemy, cNode, eNode)
 		result = a.process(eNode, cNode)
 		#a.consolePrintMap(result)
