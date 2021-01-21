@@ -2,7 +2,7 @@ import pygame
 from pygame.sprite import Sprite
 from pygame.surface import Surface
 from direction import Direction
-from controllable import Controllable
+from collidable import Collidable
 from enum import Enum
 from settings import Settings
 
@@ -10,7 +10,7 @@ class ProjectileType(Enum):
 	FROST = '../img/frost_bolt.png'
 	FIRE = '../img/fire_bolt.png'
 
-class Projectile(Sprite, Controllable):
+class Projectile(Sprite, Collidable):
 	MAX_FRAMES = 2
 	FRAME_HEIGHT = 137
 	FRAME_WIDHT = 128
