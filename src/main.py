@@ -90,27 +90,47 @@ class Main:
 				self.framesPassed = 0
 			#if self.e.isReadyForNewPath() and self.ai.enemyPath is not None and len(self.ai.enemyPath) > 0:
 			#	self.e.path = self.ai.enemyPath
+			self.effectors.add(self.player.getEffectors())
+			for effect in self.effectors:
+				effect.calculateState()
 			for sObj in self.stateableObjs:
 				sObj.calculateState()
 			for cObj in self.collidableObjs:
 				#print('Cobj: '+ cObj)
 				cObj.calculateCollisions(self.bgSprites)
 				cObj.calculateCollisions(self.collidableObjs)
-			self.effectors.add(self.player.getEffectors())
-			for effect in self.effectors:
-				effect.calculateState()
-			self.cleanOutOfScreenObjects()
+				cObj.calculateCollisions(self.effectors)
+			self.clearOutOfScreenObjects()
+			self.clearBodies()
 			self.map.checkMapChange(self.bgSprites, self.effectors)
 			self.draw()
 			self.framesPassed += 1
 			sleep(0.04)
 
-	def cleanOutOfScreenObjects(self):
+	def clearOutOfScreenObjects(self):
 		toDelete = []
 		for e in self.effectors:
 			if e.delete():
 				toDelete.append(e)
 		self.effectors.remove(toDelete)
+
+
+	def clearBodies(self):
+		toDelete = []
+		#for e in self.effectors:
+		if self.e.delete():
+			toDelete.append(self.e)
+		if len(toDelete) > 0:
+			print(toDelete)
+			if toDelete in self.bgSprites:
+				print('from bg')
+				self.bgSprites.remove(toDelete)
+			if toDelete[0] in self.stateableObjs:
+				print('from st')
+				self.stateableObjs.remove(toDelete[0])
+			if toDelete[0] in self.collidableObjs:
+				print('from col')
+				self.collidableObjs.remove(toDelete[0])
 
 if __name__ == '__main__':
 	app = Main()

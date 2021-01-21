@@ -4,7 +4,7 @@ from pygame.surface import Surface
 from direction import Direction
 from attackable import Attackable
 from wall import Wall
-
+from projectile import Projectile
 class Enemy(Sprite, Attackable):
 	STATIONARY_FRAME = 1
 
@@ -40,6 +40,10 @@ class Enemy(Sprite, Attackable):
 		self.nextMove = None
 
 	def calculateState(self):
+		if self.hp <= 0:
+			print ("DEAD@@@")
+			return
+
 		self.__setMoveFromPath()				
 		if self.isMoving:
 			self.frame += 1
@@ -59,11 +63,18 @@ class Enemy(Sprite, Attackable):
 
 	def calculateCollisions(self, colliders):
 		walls = pygame.sprite.Group()
+		projectiles = pygame.sprite.Group()
 		for ob in colliders:
-			if type(ob) is Wall:
+			if ob is self :
+				continue
+			elif isinstance(ob, Wall):
 				walls.add(ob)
+			elif isinstance(ob, Projectile):
+				projectiles.add(ob)
 		self.onWallCollision(walls)
 		walls.empty()
+		self.onProjectileCollision(projectiles)
+		projectiles.empty()
 
 	def onWallCollision(self, walls):
 		collisions = pygame.sprite.spritecollide(self, walls, False)
@@ -80,6 +91,14 @@ class Enemy(Sprite, Attackable):
 				elif derection == Direction.LEFT:
 					self.rect.x = collision.rect.x + collision.rect.width
 				collisions.clear()
+
+	def onProjectileCollision(self, projectiles):
+		print(projectiles)
+		collisions = pygame.sprite.spritecollide(self, projectiles, False)
+		derection = self.direction
+		for collision in collisions:
+			print(collision)
+			self.hp -= 1
 
 	def __prapareSprite(self, frame):
 		size = self.spriteSize
@@ -119,3 +138,8 @@ class Enemy(Sprite, Attackable):
 		elif yTo > self.rect.y:
 			direction = Direction.DOWN
 		return direction
+
+	def delete(self):
+		if self.hp <= 0:
+			return True
+		return False
