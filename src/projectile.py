@@ -2,7 +2,7 @@ import pygame
 from pygame.sprite import Sprite
 from pygame.surface import Surface
 from direction import Direction
-from collidable import Collidable
+from attack import Attack
 from enum import Enum
 from settings import Settings
 
@@ -10,14 +10,15 @@ class ProjectileType(Enum):
 	FROST = '../img/frost_bolt.png'
 	FIRE = '../img/fire_bolt.png'
 
-class Projectile(Sprite, Collidable):
+class Projectile(Sprite, Attack):
 	MAX_FRAMES = 2
 	FRAME_HEIGHT = 137
 	FRAME_WIDHT = 128
 	ANIMATION_STEPING =  2# value f.e. 10 means that each 10-th frame animation frame will be changed
 
-	def __init__(self, projectileType, direction, position):
-		super().__init__()
+	def __init__(self, projectileType, direction, position, damage):
+		Sprite.__init__(self)
+		Attack.__init__(self, damage)
 		self.speed = 15
 		self.direction = direction
 		self.frame = 0

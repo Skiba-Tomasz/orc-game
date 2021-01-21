@@ -27,6 +27,7 @@ class Character(Sprite, Controllable, Attackable):
 		self.rect.y = position[1]*48
 		self.projectileType = ProjectileType.FROST
 		self.effectors = pygame.sprite.Group()
+		self.projectileDamage = 2
 		self.effectors.empty()
 
 	def getEffectors(self):
@@ -52,7 +53,7 @@ class Character(Sprite, Controllable, Attackable):
 			self.direction = Direction.DOWN
 			self.frame = Character.STATIONARY_FRAME
 		elif event.key == pygame.K_c:
-			proj = Projectile(self.projectileType, self.direction, (self.rect.x, self.rect.y))
+			proj = Projectile(self.projectileType, self.direction, (self.rect.x, self.rect.y), self.projectileDamage)
 			self.effectors.add(proj)
 
 	def onKeyUp(self, event):
@@ -102,7 +103,7 @@ class Character(Sprite, Controllable, Attackable):
 		derection = self.direction
 		for collision in collisions:
 			#print(collision)
-			if collision.collidable:
+			if collision.solid:
 				if derection == Direction.UP:
 					self.rect.y = collision.rect.y + collision.rect.height
 				elif derection == Direction.DOWN:

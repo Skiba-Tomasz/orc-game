@@ -24,30 +24,33 @@ class Main:
 		self.bgSprites.empty()
 		self.bgSprites.add(self.map)
 		self.bgSprites.add(self.map.envObjects)
-		
+		self.attackableObjects = pygame.sprite.Group()
+		self.attackableObjects.empty()		
+		self.attackableObjects.add(self.map.attObjects)
 
 		self.controllableSprites = pygame.sprite.Group()
 		self.controllableSprites.empty()
 		self.controllableSprites.add(self.player)
 
-		#self.projectile = Projectile(ProjectileType.FROST, self.player.direction, (10,5))
-		#self.controllableSprites.add(self.projectile)
+
+
 
 		self.effectors = pygame.sprite.Group()
 		self.effectors.empty()
 
-		self.e = Enemy((1,1))
-		self.bgSprites.add(self.e)
+		#self.e = Enemy((1,1))
+		#self.bgSprites.add(self.e)
 
 		self.controllableObjects = [self.player]
 
-		self.stateableObjs = [self.player, self.e]
-		self.collidableObjs = [self.player, self.e]
+		self.stateableObjs = [self.player]#, self.e]
+		self.collidableObjs = [self.player]#, self.e]
 		self.controllableObjects = [self.player]
 
-		self.ai = GameAI(5)
 
-		self.ai.move(self.player, self.e, self.bgSprites)
+		self.ai = GameAI(10)
+
+		#self.ai.move(self.player, self.bgSprites)#, self.e,)
 
 
 		self.framesPassed = 0;
@@ -76,18 +79,30 @@ class Main:
 		self.bgSprites.draw(self.screen)
 		self.controllableSprites.draw(self.screen)
 		self.effectors.draw(self.screen)
+		self.attackableObjects.draw(self.screen)
 		pygame.display.flip()		
 
 	def run(self):
 		while True:
+			
 			self.onEvent()
+			for atOb in self.attackableObjects:
+				if(atOb not in self.stateableObjs):
+					self.stateableObjs.append(atOb)
+				if(atOb not in self.collidableObjs):
+					self.collidableObjs.append(atOb)
+
 			if self.framesPassed % Main.SETTINGS.pathfindingFreq == 0:
 				self.generateNextPath = True
 				self.framesPassed = 0
-			if (self.generateNextPath and self.e.isReadyForNewPath()) or self.e.isPathCompleted():
-				self.ai.move(self.player, self.e, self.bgSprites)
-				self.generateNextPath = False
-				self.framesPassed = 0
+			for atOb in self.attackableObjects:
+				if isinstance(atOb, Enemy) and (self.generateNextPath and atOb.isReadyForNewPath()) or atOb.isPathCompleted():
+					self.ai.move(self.player, atOb, self.bgSprites)
+					self.generateNextPath = False
+					self.framesPassed = 0
+					#atOb.calculateCollisions(self.bgSprites)
+					#atOb.calculateCollisions(self.collidableObjs)
+					#atOb.calculateCollisions(self.effectors)
 			#if self.e.isReadyForNewPath() and self.ai.enemyPath is not None and len(self.ai.enemyPath) > 0:
 			#	self.e.path = self.ai.enemyPath
 			self.effectors.add(self.player.getEffectors())
@@ -102,7 +117,7 @@ class Main:
 				cObj.calculateCollisions(self.effectors)
 			self.clearOutOfScreenObjects()
 			self.clearBodies()
-			self.map.checkMapChange(self.bgSprites, self.effectors)
+			self.map.checkMapChange(self.bgSprites, self.effectors, self.attackableObjects)
 			self.draw()
 			self.framesPassed += 1
 			sleep(0.04)
@@ -117,20 +132,23 @@ class Main:
 
 	def clearBodies(self):
 		toDelete = []
-		#for e in self.effectors:
-		if self.e.delete():
-			toDelete.append(self.e)
-		if len(toDelete) > 0:
-			print(toDelete)
-			if toDelete in self.bgSprites:
-				print('from bg')
-				self.bgSprites.remove(toDelete)
-			if toDelete[0] in self.stateableObjs:
-				print('from st')
-				self.stateableObjs.remove(toDelete[0])
-			if toDelete[0] in self.collidableObjs:
-				print('from col')
-				self.collidableObjs.remove(toDelete[0])
+		for e in self.attackableObjects:
+			if isinstance(e, Enemy) and e.delete():
+				toDelete.append(e)
+			if len(toDelete) > 0:
+				print(toDelete)
+				if toDelete in self.bgSprites:
+					print('from bg')
+					self.bgSprites.remove(toDelete)
+				if toDelete[0] in self.stateableObjs:
+					print('from st')
+					self.stateableObjs.remove(toDelete[0])
+				if toDelete[0] in self.collidableObjs:
+					print('from col')
+					self.collidableObjs.remove(toDelete[0])
+				if toDelete[0] in self.attackableObjects:
+					print('from col')
+					self.attackableObjects.remove(toDelete[0])
 
 if __name__ == '__main__':
 	app = Main()

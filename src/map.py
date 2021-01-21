@@ -3,6 +3,8 @@ from pygame.sprite import Sprite
 from pygame.surface import Surface
 from objectfactory import ObjectFactory
 from settings import Settings
+from backgroundsprite import BackgroundSprite
+from attackable import Attackable
 
 class Map(Sprite):
 
@@ -13,12 +15,14 @@ class Map(Sprite):
 		self.character = character;
 		self.envObjects = pygame.sprite.Group()
 		self.envObjects.empty()
+		self.attObjects = pygame.sprite.Group()
+		self.attObjects.empty()
 		self.objectFactory = ObjectFactory()
 		self.__loadPart(part)
 		self.__prepareBG('../img/bg_brick3.png')
 		self.__prepareEnvObj()
 
-	def checkMapChange(self, globalEnvSprites, globalEffectors):
+	def checkMapChange(self, globalEnvSprites, globalEffectors, globalAttObjects):
 		settings = Settings()
 		chPos = (self.character.rect.x, self.character.rect.y)
 		#print(chPos)
@@ -46,6 +50,8 @@ class Map(Sprite):
 			globalEnvSprites.empty()
 			globalEnvSprites.add(self)
 			globalEnvSprites.add(self.envObjects)
+			globalAttObjects.empty()
+			globalAttObjects.add(self.attObjects)
 			globalEffectors.empty()
 		#	return self.envObjects
 		#return globalEnvSprites
@@ -67,8 +73,11 @@ class Map(Sprite):
 		for y in range(len(self.levelRows)):
 			for x in range(len(self.levelRows[y])):
 				ob = self.objectFactory.produce(self.levelRows[y][x], (x, y))
-				if ob is not None:
-					print('Obj added ' + ob.wallType.value)
+				if ob is not None and isinstance(ob, Attackable):
+					print('Adding attacable')
+					self.attObjects.add(ob)
+				elif ob is not None and isinstance(ob, BackgroundSprite):
+					## print('Obj added ' + ob.wallType.value)
 					self.envObjects.add(ob)
 
 
@@ -83,4 +92,5 @@ class Map(Sprite):
 	def __refreshMap(self):
 		self.__loadPart(self.part)
 		self.envObjects.empty()
+		self.attObjects.empty()
 		self.__prepareEnvObj()
