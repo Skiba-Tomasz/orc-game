@@ -1,7 +1,7 @@
 import pygame
 from pygame.sprite import Sprite
 from pygame.surface import Surface
-from spriteinterpreter import SpriteInterpreter
+from objectfactory import ObjectFactory
 from settings import Settings
 
 class Map(Sprite):
@@ -13,7 +13,7 @@ class Map(Sprite):
 		self.character = character;
 		self.envObjects = pygame.sprite.Group()
 		self.envObjects.empty()
-		self.interpreter = SpriteInterpreter()
+		self.objectFactory = ObjectFactory()
 		self.__loadPart(part)
 		self.__prepareBG('../img/bg_brick3.png')
 		self.__prepareEnvObj()
@@ -66,7 +66,7 @@ class Map(Sprite):
 	def __prepareEnvObj(self):
 		for y in range(len(self.levelRows)):
 			for x in range(len(self.levelRows[y])):
-				ob = self.interpreter.interpret(self.levelRows[y][x], (x, y))
+				ob = self.objectFactory.produce(self.levelRows[y][x], (x, y))
 				if ob is not None:
 					print('Obj added ' + ob.wallType.value)
 					self.envObjects.add(ob)
