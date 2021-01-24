@@ -10,9 +10,11 @@ class GameAI:
 			return
 		cNode = Node((round(character.rect.x/48), round(character.rect.y/48)))
 		eNode = Node((round(enemy.rect.x/48), round(enemy.rect.y/48)))
-		a = Astar(1000)
+		a = Astar(500)
 		if a.distance(cNode, eNode) > self.triggerDistance:
+			enemy.outOfRange = True
 			return
+		enemy.outOfRange = False
 		self.parseObstacles(obstacles, a)
 		#self.hardLog(character, enemy, cNode, eNode)
 		result = a.process(eNode, cNode)

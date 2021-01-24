@@ -25,7 +25,7 @@ class Character(Sprite, Controllable, Attackable):
 		self.rect = self.image.get_rect()
 		self.rect.x = position[0]*48
 		self.rect.y = position[1]*48
-		self.projectileType = ProjectileType.FROST
+		self.projectileType = ProjectileType.FIRE
 		self.effectors = pygame.sprite.Group()
 		self.projectileDamage = 2
 		self.effectors.empty()
@@ -118,15 +118,15 @@ class Character(Sprite, Controllable, Attackable):
 		collisions = pygame.sprite.spritecollide(self, enemies, False)
 		derection = self.direction
 		for collision in collisions:
-			if derection == Direction.UP:
-				self.rect.y = collision.rect.y + collision.rect.height
-			elif derection == Direction.DOWN:
-				self.rect.y = collision.rect.y - self.rect.height
-			elif derection == Direction.RIGHT:
-				self.rect.x = collision.rect.x - collision.rect.width
-			elif derection == Direction.LEFT:
-				self.rect.x = collision.rect.x + collision.rect.width
-			self.hp -= 1
+#			if derection == Direction.UP:
+#				self.rect.y = collision.rect.y + collision.rect.height
+#			elif derection == Direction.DOWN:
+#				self.rect.y = collision.rect.y - self.rect.height
+#			elif derection == Direction.RIGHT:
+#				self.rect.x = collision.rect.x - collision.rect.width
+#			elif derection == Direction.LEFT:
+#				self.rect.x = collision.rect.x + collision.rect.width
+#			self.hp -= 1
 			print('Hit!')
 
 	def __prapareSprite(self, frame):

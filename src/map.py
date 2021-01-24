@@ -53,6 +53,8 @@ class Map(Sprite):
 			globalAttObjects.empty()
 			globalAttObjects.add(self.attObjects)
 			globalEffectors.empty()
+			return True
+		return False
 		#	return self.envObjects
 		#return globalEnvSprites
 

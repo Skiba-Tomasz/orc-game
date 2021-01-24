@@ -14,11 +14,9 @@ class ObjectFactory:
 		elif character == '2':
 			return Wall(position, (48, 48), WallType.GROUND, True)
 		elif character == 'q':
-			enemy = Enemy(position, 3)
-		#	self.hp = 10
-		#	self.speed = 8 #IT HAS TO BE A DEVIDER OF MAP FIELD SIZE! (for now at least)
-			#self.direction = Direction.LEFT
-			return enemy
+			return Enemy(position, 3, 20, 4)
 		elif character == 'w':
-			return Wall(position, (48, 48), WallType.GROUND, True)
+			return Enemy(position, 2, 1, 12)
+		elif character == 'e':
+			return Enemy(position, 0, 8, 6)
 		return None

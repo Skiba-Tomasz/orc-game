@@ -8,14 +8,15 @@ from projectile import Projectile
 class Enemy(Sprite, Attackable):
 	STATIONARY_FRAME = 1
 
-	def __init__(self, position, spriteID = 2):
+	def __init__(self, position, spriteID = 2, hp = 10, speed = 8):
 		super().__init__()
 		self.spriteID = spriteID
-		self.hp = 20
+		self.hp = hp
 		self.spriteSize = 48
-		self.speed = 8 #IT HAS TO BE A DEVIDER OF MAP FIELD SIZE! (for now at least)
+		self.speed = speed #IT HAS TO BE A DEVIDER OF MAP FIELD SIZE! (for now at least)
 		self.frame = 1
 		self.isMoving = False
+		self.outOfRange = False
 		self.direction = Direction.DOWN
 		self.spriteSheet = pygame.image.load('../img/goblins.png')
 		self.__prapareSprite(1)
@@ -43,9 +44,11 @@ class Enemy(Sprite, Attackable):
 		if self.hp <= 0:
 			print ("DEAD@@@")
 			return
-		self.__setMoveFromPath()				
+		self.__setMoveFromPath()
+		if self.outOfRange and self.isReadyForNewPath():
+			self.isMoving = False
 		if self.isMoving:
-			print('movin')
+			#print('movin')
 			self.frame += 1
 			if self.frame == 3:
 				self.frame = 0
@@ -80,7 +83,7 @@ class Enemy(Sprite, Attackable):
 		collisions = pygame.sprite.spritecollide(self, walls, False)
 		derection = self.direction
 		for collision in collisions:
-			print(collision)
+			#print(collision)
 			if collision.solid:
 				if derection == Direction.UP:
 					self.rect.y = collision.rect.y + collision.rect.height
@@ -93,11 +96,11 @@ class Enemy(Sprite, Attackable):
 				collisions.clear()
 
 	def onProjectileCollision(self, projectiles):
-		print(projectiles)
+		#print(projectiles)
 		collisions = pygame.sprite.spritecollide(self, projectiles, True)
 		derection = self.direction
 		for collision in collisions:
-			print(collision)
+			#print(collision)
 			self.hp -= collision.damage
 
 	def __prapareSprite(self, frame):
@@ -111,16 +114,16 @@ class Enemy(Sprite, Attackable):
 		self.image.set_colorkey((0, 0, 0))
 
 	def __setMoveFromPath(self):
-		print('setmove')
+		#print('setmove')
 		if self.path is not None and len(self.path) > 0 and self.nextMove is None:
 			if len(self.path) > 1 and self.__getMoveDirection(self.path[1].x, self.path[1].y) == self.direction:
 				self.path.pop(0)
 			self.nextMove = self.path.pop(0)
-			print('setmove1')
+			#print('setmove1')
 		if self.nextMove is not None:
 			xTo = self.nextMove.x * 48
 			yTo = self.nextMove.y * 48
-			print('setmove2')
+			#print('setmove2')
 			print('Enemy position(' + str(self.rect.x) + 'x' + str(self.rect.y) + ' Target position (' + str(xTo) + 'x' + str(yTo) + ')')
 			self.direction = self.__getMoveDirection(xTo, yTo)
 			self.isMoving = True
@@ -147,5 +150,6 @@ class Enemy(Sprite, Attackable):
 
 	def isDead(self):
 		if self.hp <= 0:
+			self.isMoving = False
 			return True
 		return False

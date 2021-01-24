@@ -48,7 +48,7 @@ class Main:
 		self.controllableObjects = [self.player]
 
 
-		self.ai = GameAI(10)
+		self.ai = GameAI(8)
 
 		#self.ai.move(self.player, self.bgSprites)#, self.e,)
 
