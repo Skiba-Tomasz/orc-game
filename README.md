@@ -1,8 +1,8 @@
 # Python project for I-ASP-ZP classes at WIT 
 
-![Image not found](/screenshot/scr1.jpg?raw=true)
-![Image not found](/screenshot/scr2.jpg?raw=true)
-![Image not found](/screenshot/scr3.jpg?raw=true)
+![Image not found](/screenshot/scr1.png?raw=true)
+![Image not found](/screenshot/scr2.png?raw=true)
+![Image not found](/screenshot/scr3.png?raw=true)
 
 ## Running the project
 
