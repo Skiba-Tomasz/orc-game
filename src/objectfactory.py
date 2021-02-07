@@ -12,7 +12,9 @@ class ObjectFactory:
 		if character == '1':
 			return Wall(position, (48, 48), WallType.BRICK, True)
 		elif character == '2':
-			return Wall(position, (48, 48), WallType.GROUND, True)
+			return Wall(position, (48, 48), WallType.WOOD, True)
+		elif character == '3':
+			return Wall(position, (96, 96), WallType.PAVE, True)
 		elif character == 'q':
 			return Enemy(position, 3, 20, 4)
 		elif character == 'w':

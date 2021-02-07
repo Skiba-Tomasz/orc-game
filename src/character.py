@@ -14,9 +14,9 @@ class Character(Sprite, Controllable, Attackable):
 
 	def __init__(self, position):
 		super().__init__()
-		self.characterSpriteID = 2
+		self.characterSpriteID = 3
 		self.hp = 5
-		self.speed = 10
+		self.speed = 20
 		self.frame = 1
 		self.isMoving = False
 		self.direction = Direction.RIGHT
@@ -25,7 +25,7 @@ class Character(Sprite, Controllable, Attackable):
 		self.rect = self.image.get_rect()
 		self.rect.x = position[0]*48
 		self.rect.y = position[1]*48
-		self.projectileType = ProjectileType.FIRE
+		self.projectileType = ProjectileType.FROST
 		self.effectors = pygame.sprite.Group()
 		self.projectileDamage = 2
 		self.effectors.empty()

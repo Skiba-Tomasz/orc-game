@@ -8,8 +8,9 @@ from backgroundsprite import BackgroundSprite
 
 class WallType(Enum):
 		BRICK = 'wall_brick.png'
-		GROUND = 'wall_ground.png'
+		GROUND = 'ground_grass.jpg'
 		PAVE = "bg_brick.png"
+		WOOD = "wood.jpg"
 
 class Wall(Sprite, BackgroundSprite):
 
