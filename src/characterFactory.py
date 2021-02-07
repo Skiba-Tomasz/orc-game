@@ -4,9 +4,9 @@ from settings import Settings
 from projectile import ProjectileType
 
 class CharacterType(Enum):
-	EDD = 1
-	ALICE = 2
-	CYBER = 3
+	EDD = 'EDD'
+	ALICE = 'ALICE'
+	CYBER = 'CYBER'
 
 class CharacterFactory:
 
@@ -18,4 +18,4 @@ class CharacterFactory:
 		elif characterType == CharacterType.ALICE:
 			self.character = Character(position = startingPos, hp = 20, speed = 10, projectileType = ProjectileType.FROST, damage = 1, spriteID = 0)
 		elif characterType == CharacterType.CYBER:
-			self.character = Character(position = startingPos, hp = 2000, speed = 25, projectileType = ProjectileType.FIRE, damage = 7, spriteID = 3)
+			self.character = Character(position = startingPos, hp = 2, speed = 25, projectileType = ProjectileType.FIRE, damage = 7, spriteID = 3)

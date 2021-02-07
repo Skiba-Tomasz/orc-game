@@ -5,6 +5,8 @@ from direction import Direction
 from attackable import Attackable
 from wall import Wall
 from projectile import Projectile
+from character import Character
+
 class Enemy(Sprite, Attackable):
 	STATIONARY_FRAME = 1
 
@@ -75,6 +77,8 @@ class Enemy(Sprite, Attackable):
 				walls.add(ob)
 			elif isinstance(ob, Projectile):
 				projectiles.add(ob)
+			elif isinstance(ob, Character):
+				self.onCharacterCollision(ob)
 		self.onWallCollision(walls)
 		walls.empty()
 		self.onProjectileCollision(projectiles)
@@ -103,6 +107,22 @@ class Enemy(Sprite, Attackable):
 		for collision in collisions:
 			#print(collision)
 			self.hp -= collision.damage
+
+	def onCharacterCollision(self, character):
+		characterG = pygame.sprite.Group()
+		characterG.add(character)
+		collisions = pygame.sprite.spritecollide(self, characterG, False)
+		derection = self.direction
+		for collision in collisions:
+			if derection == Direction.UP:
+				self.rect.y = collision.rect.y + collision.rect.height
+			elif derection == Direction.DOWN:
+				self.rect.y = collision.rect.y - self.rect.height
+			elif derection == Direction.RIGHT:
+				self.rect.x = collision.rect.x - collision.rect.width
+			elif derection == Direction.LEFT:
+				self.rect.x = collision.rect.x + collision.rect.width
+			collisions.clear()
 
 	def __prapareSprite(self, frame):
 		size = self.spriteSize

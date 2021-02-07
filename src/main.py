@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, random
 from time import sleep
 
 from settings import Settings
@@ -10,6 +10,8 @@ from attackable import Attackable
 from gameAI import GameAI
 
 from characterFactory import *
+
+from os import walk
 
 class Main:
 	SETTINGS = Settings()
@@ -23,7 +25,20 @@ class Main:
 		pygame.display.set_caption("Let me out")
 
 
-		self.player = CharacterFactory(CharacterType.CYBER).character
+
+		self.totalEnemies = 0 
+		self.totalKilled = 0 
+		_, _, filenames = next(walk('../level/'))
+		for i in range(len(filenames)):
+			file = open('../level/' + filenames[i], 'r')
+			data = file.read()
+			for d in data:
+				if ord(d) >= 97 and ord(d) <=122:
+					print(d)
+					self.totalEnemies += 1
+			#print(self.totalEnemies)
+
+		self.player = CharacterFactory(random.choice(list(CharacterType))).character
 		self.map = Map((Main.SETTINGS.screen_width, Main.SETTINGS.screen_height), (0,0), self.player)
 		self.bgSprites = pygame.sprite.Group()
 		self.bgSprites.empty()
@@ -85,10 +100,11 @@ class Main:
 		self.controllableSprites.draw(self.screen)
 		self.effectors.draw(self.screen)
 		self.attackableObjects.draw(self.screen)
+		self.killCounter()
 		pygame.display.flip()		
 
 	def run(self):
-		while not self.player.isDead:
+		while not self.player.isDead and self.totalKilled < self.totalEnemies:
 			self.onEvent()
 			for atOb in self.attackableObjects:
 				if(atOb not in self.stateableObjs):
@@ -124,24 +140,11 @@ class Main:
 			self.map.checkMapChange(self.bgSprites, self.effectors, self.attackableObjects, self.stateableObjs, self.collidableObjs)
 			self.draw()
 			self.framesPassed += 1
+			
+
+
 			sleep(0.04)
-
-
-
-		pygame.display.set_caption('Show Text')
-		font = pygame.font.Font('freesansbold.ttf', 32)
-		text = font.render('GAME OVER', True, (255, 100, 0), (0, 0, 128))
-		textRect = text.get_rect()
-		textRect.center = (Main.SETTINGS.screen_width // 2, Main.SETTINGS.screen_height // 2)
-
-		while True:
-			self.screen.blit(text, textRect)
-			pygame.display.update()
-			for event in pygame.event.get():
-				if event.type == pygame.QUIT:
-					pygame.quit()
-					quit()
-				pygame.display.update()
+		self.afterGameFinished()
 
 
 	def clearOutOfScreenObjects(self):
@@ -156,6 +159,7 @@ class Main:
 		toDelete = []
 		for e in self.attackableObjects:
 			if isinstance(e, Enemy) and e.delete():
+				self.totalKilled += 1
 				if str(self.map.part) not in self.map.killed:
 					self.map.killed[str(self.map.part)] = [e.initialPosition]
 				else:
@@ -175,6 +179,70 @@ class Main:
 				if toDelete[0] in self.attackableObjects:
 					print('from col')
 					self.attackableObjects.remove(toDelete[0])
+
+	def afterGameFinished(self):
+		if self.totalKilled == self.totalEnemies:
+			WLstr = 'YOU WON!'
+			WLcol = (0,255,0)
+		else:
+			WLstr = 'YOU LOST!'
+			WLcol = (255,0,0)
+		fontWON = pygame.font.Font('freesansbold.ttf', 60)
+		textWON = fontWON.render( WLstr, True, WLcol, (0, 0, 128))
+		textRectWON = textWON.get_rect()
+		textRectWON.center = (Main.SETTINGS.screen_width / 2, Main.SETTINGS.screen_height / 2 - 100)
+
+		fontGO = pygame.font.Font('freesansbold.ttf', 60)
+		textGO = fontGO.render('GAME OVER', True, (255, 100, 0), (0, 0, 128))
+		textRectGO = textGO.get_rect()
+		textRectGO.center = (Main.SETTINGS.screen_width / 2, Main.SETTINGS.screen_height / 2)
+
+		fontRE = pygame.font.Font('freesansbold.ttf', 30)
+		textRE = fontRE.render('RESTART?', True, (255, 100, 0), (0, 0, 128))
+		textRectRE = textRE.get_rect()
+		textRectRE.center = (Main.SETTINGS.screen_width / 2, Main.SETTINGS.screen_height / 2 + 100)
+
+		fontYES = pygame.font.Font('freesansbold.ttf', 30)
+		textYES = fontYES.render('YES', True, (255, 100, 0), (0, 0, 128))
+		textRectYES = textYES.get_rect()
+		textRectYES.center = (Main.SETTINGS.screen_width / 2, Main.SETTINGS.screen_height / 2 + 135)
+
+		fontNO = pygame.font.Font('freesansbold.ttf', 30)
+		textNO = fontNO.render('NO', True, (255, 100, 0), (0, 0, 128))
+		textRectNO = textNO.get_rect()
+		textRectNO.center = (Main.SETTINGS.screen_width / 2, Main.SETTINGS.screen_height / 2 + 170)
+
+		while True:
+			#if self.totalKilled == self.totalEnemies:
+			self.screen.blit(textWON, textRectWON)
+			self.screen.blit(textGO, textRectGO)
+			self.screen.blit(textRE, textRectRE)
+			self.screen.blit(textYES, textRectYES)
+			self.screen.blit(textNO, textRectNO)
+			pygame.display.update()
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					pygame.quit()
+					quit()
+				if event.type== pygame.MOUSEBUTTONDOWN and event.button == 1:
+					mouse=pygame.mouse.get_pos()
+					if mouse[0] in range (textRectYES.x ,textRectYES.x + textRectYES.w) and  mouse[1]in range (textRectYES.y, textRectYES.y + textRectYES.h):
+						print('YES')
+						Main.IS_GAME_OVER = True
+						self.__init__()
+						self.run()
+					if mouse[0] in range (textRectNO.x ,textRectNO.x + textRectNO.w) and  mouse[1]in range (textRectNO.y, textRectNO.y + textRectNO.h):
+						print('NO')
+						pygame.quit()
+						quit()
+					pygame.display.update()
+
+	def killCounter(self):
+		fontKILL = pygame.font.Font('freesansbold.ttf', 20)
+		textKILL = fontKILL.render(str(self.totalKilled) + ' / ' + str(self.totalEnemies) + ' KILLED', True, (255, 100, 0), (0, 0, 128))
+		textRectGO = textKILL.get_rect()
+		textRectGO.topleft = (0,0)
+		self.screen.blit(textKILL, textRectGO)
 
 if __name__ == '__main__':
 	app = Main()
