@@ -22,7 +22,7 @@ class Map(Sprite):
 		self.__prepareBG('../img/bg_brick3.png')
 		self.__prepareEnvObj()
 
-	def checkMapChange(self, globalEnvSprites, globalEffectors, globalAttObjects):
+	def checkMapChange(self, globalEnvSprites, globalEffectors, globalAttObjects, stat, coli):
 		settings = Settings()
 		chPos = (self.character.rect.x, self.character.rect.y)
 		#print(chPos)
@@ -47,6 +47,14 @@ class Map(Sprite):
 			self.character.rect.x = newChPos[0]
 			self.character.rect.y = newChPos[1]
 			self.__refreshMap()
+
+			for a in globalAttObjects:
+				if a in stat:
+					stat.remove(a)
+				if a in coli:
+					coli.remove(a)
+
+
 			globalEnvSprites.empty()
 			globalEnvSprites.add(self)
 			globalEnvSprites.add(self.envObjects)
@@ -76,7 +84,7 @@ class Map(Sprite):
 			for x in range(len(self.levelRows[y])):
 				ob = self.objectFactory.produce(self.levelRows[y][x], (x, y))
 				if ob is not None and isinstance(ob, Attackable):
-					print('Adding attacable')
+					print('Adding attacable ' + str(ob.rect.x) + ' ' + str(ob.rect.y))
 					self.attObjects.add(ob)
 				elif ob is not None and isinstance(ob, BackgroundSprite):
 					## print('Obj added ' + ob.wallType.value)

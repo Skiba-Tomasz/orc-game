@@ -117,7 +117,7 @@ class Main:
 				cObj.calculateCollisions(self.effectors)
 			self.clearOutOfScreenObjects()
 			self.clearBodies()
-			self.map.checkMapChange(self.bgSprites, self.effectors, self.attackableObjects)
+			self.map.checkMapChange(self.bgSprites, self.effectors, self.attackableObjects, self.stateableObjs, self.collidableObjs)
 			self.draw()
 			self.framesPassed += 1
 			sleep(0.04)
