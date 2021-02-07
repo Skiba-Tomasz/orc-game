@@ -5,6 +5,7 @@ from objectfactory import ObjectFactory
 from settings import Settings
 from backgroundsprite import BackgroundSprite
 from attackable import Attackable
+from enemy import Enemy
 
 class Map(Sprite):
 
@@ -17,6 +18,7 @@ class Map(Sprite):
 		self.envObjects.empty()
 		self.attObjects = pygame.sprite.Group()
 		self.attObjects.empty()
+		self.killed = {}
 		self.objectFactory = ObjectFactory()
 		self.__loadPart(part)
 		self.__prepareBG('../img/bg_brick3.png')
@@ -27,7 +29,7 @@ class Map(Sprite):
 		chPos = (self.character.rect.x, self.character.rect.y)
 		#print(chPos)
 		if chPos[0] < 0:
-			tmpPart = (self.part[0]-1, self.part[1], chPos[1])
+			tmpPart = (self.part[0]-1, self.part[1])
 			newChPos = (self.size[0] - settings.tileSize, chPos[1])
 		elif chPos[0] > self.size[0] - settings.tileSize:
 			tmpPart = (self.part[0]+1, self.part[1]) 
@@ -84,8 +86,11 @@ class Map(Sprite):
 			for x in range(len(self.levelRows[y])):
 				ob = self.objectFactory.produce(self.levelRows[y][x], (x, y))
 				if ob is not None and isinstance(ob, Attackable):
-					print('Adding attacable ' + str(ob.rect.x) + ' ' + str(ob.rect.y))
-					self.attObjects.add(ob)
+					if isinstance(ob, Enemy) and (str(self.part) not in self.killed or ob.initialPosition not in self.killed[str(self.part)]):
+						print('Adding Enemy ' + str(ob.rect.x) + ' ' + str(ob.rect.y))
+						self.attObjects.add(ob)
+					else:
+						print('Enemy was dead ' + str(ob.rect.x) + ' ' + str(ob.rect.y))
 				elif ob is not None and isinstance(ob, BackgroundSprite):
 					## print('Obj added ' + ob.wallType.value)
 					self.envObjects.add(ob)

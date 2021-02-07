@@ -12,11 +12,12 @@ class Character(Sprite, Controllable, Attackable):
 	SPRITE_SIZE = 48
 	STATIONARY_FRAME = 1
 
-	def __init__(self, position):
+	def __init__(self, position, hp, speed, projectileType, damage, spriteID):
 		super().__init__()
-		self.characterSpriteID = 3
-		self.hp = 5
-		self.speed = 20
+		self.characterSpriteID = spriteID
+		self.isDead = False
+		self.hp = hp
+		self.speed = speed
 		self.frame = 1
 		self.isMoving = False
 		self.direction = Direction.RIGHT
@@ -27,7 +28,7 @@ class Character(Sprite, Controllable, Attackable):
 		self.rect.y = position[1]*48
 		self.projectileType = ProjectileType.FROST
 		self.effectors = pygame.sprite.Group()
-		self.projectileDamage = 2
+		self.projectileDamage = damage
 		self.effectors.empty()
 
 	def getEffectors(self):
@@ -67,6 +68,8 @@ class Character(Sprite, Controllable, Attackable):
 			self.isMoving = False
 
 	def calculateState(self):
+		if self.hp <= 0:
+			self.isDead = True
 		if self.isMoving:
 			self.frame += 1
 			if self.frame == 3:
@@ -118,15 +121,15 @@ class Character(Sprite, Controllable, Attackable):
 		collisions = pygame.sprite.spritecollide(self, enemies, False)
 		derection = self.direction
 		for collision in collisions:
-#			if derection == Direction.UP:
-#				self.rect.y = collision.rect.y + collision.rect.height
-#			elif derection == Direction.DOWN:
-#				self.rect.y = collision.rect.y - self.rect.height
-#			elif derection == Direction.RIGHT:
-#				self.rect.x = collision.rect.x - collision.rect.width
-#			elif derection == Direction.LEFT:
-#				self.rect.x = collision.rect.x + collision.rect.width
-#			self.hp -= 1
+			if derection == Direction.UP:
+				self.rect.y = collision.rect.y + collision.rect.height
+			elif derection == Direction.DOWN:
+				self.rect.y = collision.rect.y - self.rect.height
+			elif derection == Direction.RIGHT:
+				self.rect.x = collision.rect.x - collision.rect.width
+			elif derection == Direction.LEFT:
+				self.rect.x = collision.rect.x + collision.rect.width
+			self.hp -= 1
 			print('Hit!')
 
 	def __prapareSprite(self, frame):

@@ -10,6 +10,7 @@ class Enemy(Sprite, Attackable):
 
 	def __init__(self, position, spriteID = 2, hp = 10, speed = 8):
 		super().__init__()
+		self.initialPosition = position
 		self.spriteID = spriteID
 		self.hp = hp
 		self.spriteSize = 48

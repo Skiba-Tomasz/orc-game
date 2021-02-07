@@ -8,8 +8,12 @@ from map import Map
 from enemy import Enemy
 from attackable import Attackable
 from gameAI import GameAI
+
+from characterFactory import *
+
 class Main:
 	SETTINGS = Settings()
+	IS_GAME_OVER = False
 
 	def __init__(self):
 		pygame.init()
@@ -18,7 +22,8 @@ class Main:
 		Main.SETTINGS.screen_height = self.screen.get_rect().height
 		pygame.display.set_caption("Let me out")
 
-		self.player = Character((10,4))
+
+		self.player = CharacterFactory(CharacterType.CYBER).character
 		self.map = Map((Main.SETTINGS.screen_width, Main.SETTINGS.screen_height), (0,0), self.player)
 		self.bgSprites = pygame.sprite.Group()
 		self.bgSprites.empty()
@@ -83,8 +88,7 @@ class Main:
 		pygame.display.flip()		
 
 	def run(self):
-		while True:
-			
+		while not self.player.isDead:
 			self.onEvent()
 			for atOb in self.attackableObjects:
 				if(atOb not in self.stateableObjs):
@@ -122,6 +126,24 @@ class Main:
 			self.framesPassed += 1
 			sleep(0.04)
 
+
+
+		pygame.display.set_caption('Show Text')
+		font = pygame.font.Font('freesansbold.ttf', 32)
+		text = font.render('GAME OVER', True, (255, 100, 0), (0, 0, 128))
+		textRect = text.get_rect()
+		textRect.center = (Main.SETTINGS.screen_width // 2, Main.SETTINGS.screen_height // 2)
+
+		while True:
+			self.screen.blit(text, textRect)
+			pygame.display.update()
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					pygame.quit()
+					quit()
+				pygame.display.update()
+
+
 	def clearOutOfScreenObjects(self):
 		toDelete = []
 		for e in self.effectors:
@@ -134,6 +156,10 @@ class Main:
 		toDelete = []
 		for e in self.attackableObjects:
 			if isinstance(e, Enemy) and e.delete():
+				if str(self.map.part) not in self.map.killed:
+					self.map.killed[str(self.map.part)] = [e.initialPosition]
+				else:
+					self.map.killed[str(self.map.part)].append(e.initialPosition)
 				toDelete.append(e)
 			if len(toDelete) > 0:
 				print(toDelete)
