@@ -27,7 +27,6 @@ class Map(Sprite):
 	def checkMapChange(self, globalEnvSprites, globalEffectors, globalAttObjects, stat, coli):
 		settings = Settings()
 		chPos = (self.character.rect.x, self.character.rect.y)
-		#print(chPos)
 		if chPos[0] < 0:
 			tmpPart = (self.part[0]-1, self.part[1])
 			newChPos = (self.size[0] - settings.tileSize, chPos[1])
@@ -65,8 +64,6 @@ class Map(Sprite):
 			globalEffectors.empty()
 			return True
 		return False
-		#	return self.envObjects
-		#return globalEnvSprites
 
 	def __prepareBG(self, textureDir):
 		texture = pygame.image.load(textureDir)
@@ -92,7 +89,6 @@ class Map(Sprite):
 					else:
 						print('Enemy was dead ' + str(ob.rect.x) + ' ' + str(ob.rect.y))
 				elif ob is not None and isinstance(ob, BackgroundSprite):
-					## print('Obj added ' + ob.wallType.value)
 					self.envObjects.add(ob)
 
 

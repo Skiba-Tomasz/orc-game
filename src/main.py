@@ -36,7 +36,6 @@ class Main:
 				if ord(d) >= 97 and ord(d) <=122:
 					print(d)
 					self.totalEnemies += 1
-			#print(self.totalEnemies)
 
 		self.player = CharacterFactory(random.choice(list(CharacterType))).character
 		self.map = Map((Main.SETTINGS.screen_width, Main.SETTINGS.screen_height), (0,0), self.player)
@@ -58,9 +57,6 @@ class Main:
 		self.effectors = pygame.sprite.Group()
 		self.effectors.empty()
 
-		#self.e = Enemy((1,1))
-		#self.bgSprites.add(self.e)
-
 		self.controllableObjects = [self.player]
 
 		self.stateableObjs = [self.player]#, self.e]
@@ -69,9 +65,6 @@ class Main:
 
 
 		self.ai = GameAI(8)
-
-		#self.ai.move(self.player, self.bgSprites)#, self.e,)
-
 
 		self.framesPassed = 0;
 		self.generateNextPath = False
@@ -120,18 +113,12 @@ class Main:
 					self.ai.move(self.player, atOb, self.bgSprites)
 					self.generateNextPath = False
 					self.framesPassed = 0
-					#atOb.calculateCollisions(self.bgSprites)
-					#atOb.calculateCollisions(self.collidableObjs)
-					#atOb.calculateCollisions(self.effectors)
-			#if self.e.isReadyForNewPath() and self.ai.enemyPath is not None and len(self.ai.enemyPath) > 0:
-			#	self.e.path = self.ai.enemyPath
 			self.effectors.add(self.player.getEffectors())
 			for effect in self.effectors:
 				effect.calculateState()
 			for sObj in self.stateableObjs:
 				sObj.calculateState()
 			for cObj in self.collidableObjs:
-				#print('Cobj: '+ cObj)
 				cObj.calculateCollisions(self.bgSprites)
 				cObj.calculateCollisions(self.collidableObjs)
 				cObj.calculateCollisions(self.effectors)
@@ -213,7 +200,6 @@ class Main:
 		textRectNO.center = (Main.SETTINGS.screen_width / 2, Main.SETTINGS.screen_height / 2 + 170)
 
 		while True:
-			#if self.totalKilled == self.totalEnemies:
 			self.screen.blit(textWON, textRectWON)
 			self.screen.blit(textGO, textRectGO)
 			self.screen.blit(textRE, textRectRE)

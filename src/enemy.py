@@ -51,7 +51,6 @@ class Enemy(Sprite, Attackable):
 		if self.outOfRange and self.isReadyForNewPath():
 			self.isMoving = False
 		if self.isMoving:
-			#print('movin')
 			self.frame += 1
 			if self.frame == 3:
 				self.frame = 0
@@ -88,7 +87,6 @@ class Enemy(Sprite, Attackable):
 		collisions = pygame.sprite.spritecollide(self, walls, False)
 		derection = self.direction
 		for collision in collisions:
-			#print(collision)
 			if collision.solid:
 				if derection == Direction.UP:
 					self.rect.y = collision.rect.y + collision.rect.height
@@ -101,11 +99,9 @@ class Enemy(Sprite, Attackable):
 				collisions.clear()
 
 	def onProjectileCollision(self, projectiles):
-		#print(projectiles)
 		collisions = pygame.sprite.spritecollide(self, projectiles, True)
 		derection = self.direction
 		for collision in collisions:
-			#print(collision)
 			self.hp -= collision.damage
 
 	def onCharacterCollision(self, character):
@@ -135,16 +131,13 @@ class Enemy(Sprite, Attackable):
 		self.image.set_colorkey((0, 0, 0))
 
 	def __setMoveFromPath(self):
-		#print('setmove')
 		if self.path is not None and len(self.path) > 0 and self.nextMove is None:
 			if len(self.path) > 1 and self.__getMoveDirection(self.path[1].x, self.path[1].y) == self.direction:
 				self.path.pop(0)
 			self.nextMove = self.path.pop(0)
-			#print('setmove1')
 		if self.nextMove is not None:
 			xTo = self.nextMove.x * 48
 			yTo = self.nextMove.y * 48
-			#print('setmove2')
 			print('Enemy position(' + str(self.rect.x) + 'x' + str(self.rect.y) + ' Target position (' + str(xTo) + 'x' + str(yTo) + ')')
 			self.direction = self.__getMoveDirection(xTo, yTo)
 			self.isMoving = True
